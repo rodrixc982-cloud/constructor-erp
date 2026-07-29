@@ -111,3 +111,4 @@ routes/
   web.php                 # Incluye todos los routes/modules/*.php
   modules/                # Un archivo de rutas por grupo de módulos
 ```
+ RODRIXC TIANZ 2026 DERECHO RESERVADO 
