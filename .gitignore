@@ -1,0 +1,11 @@
+# Laravel
+/vendor/
+/node_modules/
+/public/build/
+
+# Variables de entorno (NO subir)
+.env
+.env.*
+
+# Archivos temporales
+/storage/*.key
