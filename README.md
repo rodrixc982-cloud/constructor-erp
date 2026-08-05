@@ -1,3 +1,8 @@
+<img width="1919" height="995" alt="Captura de pantalla 2026-07-28 182013" src="https://github.com/user-attachments/assets/290cbe8a-c54a-4e34-8014-97cbef07d9f9" />
+
+
+
+
 # Constructor ERP — Sistema completo (Fases 1-9)
 
 ERP profesional de presupuestos para empresas constructoras, arquitectos, ingenieros civiles y contratistas. Desarrollado en Laravel 12 + PHP 8.4.
@@ -106,3 +111,4 @@ routes/
   web.php                 # Incluye todos los routes/modules/*.php
   modules/                # Un archivo de rutas por grupo de módulos
 ```
+ RODRIXC TIANZ 2026 DERECHO RESERVADO 
