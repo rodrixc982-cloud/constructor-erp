@@ -8,11 +8,6 @@ use App\Models\MovimientoInventario;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
-/**
- * Toda la lógica de Kardex vive aquí. Cada operación es atómica
- * (DB::transaction) para que el stock del material, el stock por
- * almacén y el registro del movimiento queden siempre consistentes.
- */
 class InventarioService
 {
     public function registrarEntrada(int $materialId, int $almacenId, float $cantidad, ?string $motivo, int $usuarioId, ?string $observaciones = null): MovimientoInventario
@@ -132,8 +127,15 @@ class InventarioService
             ->get();
     }
 
+    // --- CORRECCIÓN AQUÍ ---
     public function materialesStockBajo()
     {
-        return Material::stockBajo()->where('estado', true)->get();
+        // Esto buscará los materiales donde el campo 'stock' sea menor o igual a 'stock_minimo'.
+        // Si no hiciste el Paso 2 (agregar columna 'stock_minimo'), cambia esto por:
+        // return Material::where('stock', '<=', 5)->where('estado', true)->get();
+        
+        return Material::whereColumn('stock', '<=', 'stock_minimo')
+                       ->where('estado', true)
+                       ->get();
     }
 }

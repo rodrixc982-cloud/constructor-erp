@@ -1,4 +1,5 @@
 <?php
+// app/Models/Categoria.php
 
 namespace App\Models;
 
@@ -12,19 +13,26 @@ class Categoria extends Model
 {
     use HasFactory, SoftDeletes, LogsActivity;
 
-    // Especificar el nombre correcto de la tabla
     protected $table = 'categorias';
 
-    protected $fillable = ['nombre', 'color', 'icono', 'descripcion', 'estado'];
+    protected $fillable = [
+        'nombre',
+        'color',
+        'icono',
+        'descripcion',
+        'estado'
+    ];
 
-    protected function casts(): array
-    {
-        return ['estado' => 'boolean'];
-    }
+    protected $casts = [
+        'estado' => 'boolean',
+    ];
 
     public function getActivitylogOptions(): LogOptions
     {
-        return LogOptions::defaults()->logOnlyDirty()->useLogName('categorias');
+        return LogOptions::defaults()
+            ->logOnly(['nombre', 'color', 'icono', 'descripcion', 'estado'])
+            ->logOnlyDirty()
+            ->useLogName('categorias');
     }
 
     public function materiales()

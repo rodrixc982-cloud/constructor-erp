@@ -131,7 +131,8 @@ $(document).ready(function() {
     const badges = {
         'emitido': 'info',
         'pagado': 'success',
-        'anulado': 'danger'
+        'anulado': 'danger',
+        'cancelado': 'secondary'
     };
 
     const tipoLabels = {
@@ -142,7 +143,7 @@ $(document).ready(function() {
         'orden_servicio': 'Orden de Servicio'
     };
 
-    // Inicializar DataTable
+    // ========== DATATABLE CORREGIDO ==========
     var tabla = $('#tablaFacturacion').DataTable({
         processing: true,
         serverSide: false,
@@ -150,42 +151,103 @@ $(document).ready(function() {
             url: '<?php echo e(route("facturacion.datos")); ?>',
             type: 'GET',
             dataSrc: function(json) {
-                return json.data || [];
+                // Validación de datos
+                if (!json || !json.data) {
+                    console.warn('No se recibieron datos');
+                    return [];
+                }
+                return json.data;
+            },
+            error: function(xhr, status, error) {
+                console.error('Error al cargar datos:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error al cargar datos',
+                    text: 'No se pudieron cargar los documentos. Verifica la conexión.'
+                });
             }
         },
         columns: [
+            // Columna 0: Tipo
             { 
                 data: 'tipo',
                 render: function(t) {
-                    return tipoLabels[t] || t;
+                    return tipoLabels[t] || t || '—';
                 }
             },
-            { data: 'numero_completo' },
+            // Columna 1: Número (CORREGIDO)
+            { 
+                data: 'numero_completo',
+                render: function(numero) {
+                    return numero || '—';
+                },
+                defaultContent: '—' // ✅ Esto evita el error
+            },
+            // Columna 2: Cliente
             { 
                 data: 'cliente',
                 render: function(c) {
-                    return c?.nombre || '—';
+                    if (typeof c === 'object' && c !== null) {
+                        return c.nombre || '—';
+                    }
+                    return c || '—';
                 }
             },
-            { data: 'fecha' },
+            // Columna 3: Fecha
+            { 
+                data: 'fecha',
+                render: function(f) {
+                    if (!f) return '—';
+                    // Si es string, formatear
+                    if (typeof f === 'string') {
+                        const partes = f.split('-');
+                        if (partes.length === 3) {
+                            return partes[2] + '/' + partes[1] + '/' + partes[0];
+                        }
+                        return f;
+                    }
+                    // Si es un objeto Date o similar
+                    if (typeof f === 'object' && f !== null) {
+                        try {
+                            const date = new Date(f);
+                            if (!isNaN(date.getTime())) {
+                                const d = String(date.getDate()).padStart(2, '0');
+                                const m = String(date.getMonth() + 1).padStart(2, '0');
+                                const y = date.getFullYear();
+                                return d + '/' + m + '/' + y;
+                            }
+                        } catch(e) {
+                            return f;
+                        }
+                    }
+                    return f;
+                }
+            },
+            // Columna 4: Total
             { 
                 data: 'total',
                 render: function(t) {
+                    if (t === null || t === undefined) return 'S/ 0.00';
                     return 'S/ ' + parseFloat(t).toFixed(2);
                 }
             },
+            // Columna 5: Estado
             { 
                 data: 'estado',
                 render: function(e) {
+                    if (!e) return '<span class="badge bg-secondary">—</span>';
                     var color = badges[e] || 'secondary';
                     var label = e.charAt(0).toUpperCase() + e.slice(1);
                     return '<span class="badge bg-' + color + '">' + label + '</span>';
                 }
             },
+            // Columna 6: Acciones
             {
                 data: null,
                 orderable: false,
                 render: function(r) {
+                    if (!r || !r.id) return '';
+                    
                     var acciones = '';
                     
                     // Botón PDF
@@ -193,7 +255,7 @@ $(document).ready(function() {
                     acciones += '<i class="fas fa-file-pdf"></i></a>';
                     
                     // Botón Anular (solo si no está anulado)
-                    if (r.estado !== 'anulado') {
+                    if (r.estado && r.estado !== 'anulado' && r.estado !== 'cancelado') {
                         acciones += ' <button class="btn btn-sm btn-outline-warning btnAnularDocumento" data-id="' + r.id + '" title="Anular">';
                         acciones += '<i class="fas fa-ban"></i></button>';
                     }
@@ -211,6 +273,10 @@ $(document).ready(function() {
         },
         pageLength: 10,
         ordering: true,
+        // Configuración para manejar errores
+        drawCallback: function(settings) {
+            // Ya DataTables muestra su propio mensaje "No hay datos"
+        }
     });
 
     tabla.on('xhr', function() {

@@ -391,7 +391,7 @@
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
         <a href="{{ route('dashboard') }}" class="brand-link">
             <i class="fas fa-hard-hat brand-image ms-3 mt-2"></i>
-            <span class="brand-text ms-2">Constructor ERP</span>
+            <span class="brand-text ms-2">ConstruTianz ERP</span>
         </a>
 
         <div class="sidebar">
@@ -591,10 +591,11 @@
         </section>
     </div>
 
+    <!-- ===== FOOTER MODIFICADO ===== -->
     <footer class="main-footer">
         <div class="d-flex justify-content-between align-items-center">
             <span>
-                <strong>&copy; {{ date('Y') }} {{ config('app.name') }}.</strong> Todos los derechos reservados.
+                <strong>&copy; {{ date('Y') }} Rodrixc Tianz.</strong> Todos los derechos reservados.
             </span>
             <span class="text-muted" style="font-size:0.85rem;">
                 <i class="fas fa-code me-1"></i> Versión 2.0

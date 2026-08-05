@@ -1,62 +1,487 @@
-<?php $__env->startSection('titulo', 'Datos de la Empresa'); ?>
+<?php $__env->startSection('titulo', 'Configuración de la Empresa'); ?>
 
 <?php $__env->startSection('breadcrumbs'); ?>
     <li class="breadcrumb-item"><a href="<?php echo e(route('dashboard')); ?>">Dashboard</a></li>
-    <li class="breadcrumb-item active">Empresa</li>
+    <li class="breadcrumb-item active">Datos de la empresa</li>
 <?php $__env->stopSection(); ?>
 
 <?php $__env->startSection('contenido'); ?>
-<div class="card">
-    <div class="card-header"><h3 class="card-title">Configuración de la empresa</h3></div>
-    <div class="card-body">
-        <form method="POST" action="<?php echo e(route('empresa.update')); ?>" enctype="multipart/form-data">
-            <?php echo csrf_field(); ?> <?php echo method_field('PUT'); ?>
-            <div class="row">
-                <div class="col-md-3 text-center mb-3">
-                    <img src="<?php echo e($empresa->logo ? asset('storage/'.$empresa->logo) : asset('images/logo-default.png')); ?>" class="img-fluid mb-2" style="max-height:100px">
-                    <input type="file" name="logo" class="form-control form-control-sm" accept="image/*">
-                    <small class="text-muted">Logo (aparece en PDFs)</small>
+<div class="row">
+    <div class="col-12">
+        <!-- Card principal -->
+        <div class="card">
+            <div class="card-header" style="background: #1a2332; border-bottom: 3px solid #0d6efd;">
+                <h3 class="card-title text-white">
+                    <i class="fas fa-building me-2" style="color: #0d6efd;"></i>Configuración de la Empresa
+                </h3>
+                <div class="card-tools">
+                    <span class="badge" style="background: #2d3748; color: #a0aec0; padding: 5px 10px;">
+                        <i class="far fa-clock me-1" style="color: #0d6efd;"></i><?php echo e(date('h:i:s a')); ?>
+
+                    </span>
+                    <span class="badge" style="background: #2d3748; color: #a0aec0; padding: 5px 10px; margin-left: 5px;">
+                        <i class="far fa-calendar-alt me-1" style="color: #0d6efd;"></i><?php echo e(date('d/m/Y')); ?>
+
+                    </span>
                 </div>
-                <div class="col-md-9">
+            </div>
+            <!-- /.card-header -->
+            
+            <div class="card-body" style="background: #f8f9fa;">
+                <form method="POST" action="<?php echo e(route('empresa.update')); ?>" enctype="multipart/form-data" id="empresaForm">
+                    <?php echo csrf_field(); ?>
+                    <?php echo method_field('PUT'); ?>
+
+                    <!-- Fila: Logo y datos principales -->
                     <div class="row">
-                        <div class="col-md-6 mb-3"><label class="form-label">Nombre *</label><input type="text" name="nombre" class="form-control" value="<?php echo e(old('nombre', $empresa->nombre)); ?>" required></div>
-                        <div class="col-md-6 mb-3"><label class="form-label">RUC *</label><input type="text" name="ruc" class="form-control" value="<?php echo e(old('ruc', $empresa->ruc)); ?>" required></div>
-                        <div class="col-md-6 mb-3"><label class="form-label">Dirección</label><input type="text" name="direccion" class="form-control" value="<?php echo e(old('direccion', $empresa->direccion)); ?>"></div>
-                        <div class="col-md-3 mb-3"><label class="form-label">Teléfono</label><input type="text" name="telefono" class="form-control" value="<?php echo e(old('telefono', $empresa->telefono)); ?>"></div>
-                        <div class="col-md-3 mb-3"><label class="form-label">Email</label><input type="email" name="email" class="form-control" value="<?php echo e(old('email', $empresa->email)); ?>"></div>
-                        <div class="col-md-6 mb-3"><label class="form-label">Página web</label><input type="url" name="pagina_web" class="form-control" value="<?php echo e(old('pagina_web', $empresa->pagina_web)); ?>"></div>
-                        <div class="col-md-3 mb-3"><label class="form-label">IGV / IVA (%)</label><input type="number" step="0.01" name="igv" class="form-control" value="<?php echo e(old('igv', $empresa->igv ?? 18)); ?>" required></div>
-                        <div class="col-md-3 mb-3"><label class="form-label">Moneda</label><input type="text" name="moneda" class="form-control" value="<?php echo e(old('moneda', $empresa->moneda ?? 'PEN')); ?>" required></div>
+                        <!-- Columna Logo -->
+                        <div class="col-md-3">
+                            <div class="card" style="border-left: 3px solid #0d6efd;">
+                                <div class="card-header" style="background: #f1f3f5; border-bottom: 1px solid #dee2e6;">
+                                    <h5 class="card-title mb-0" style="color: #1a2332;">
+                                        <i class="fas fa-image me-1" style="color: #0d6efd;"></i>Logo
+                                    </h5>
+                                </div>
+                                <div class="card-body text-center">
+                                    <div class="text-center mb-3">
+                                        <img src="<?php echo e($empresa->logo ? asset('storage/'.$empresa->logo) : asset('images/logo-default.png')); ?>" 
+                                             alt="Logo de la empresa" 
+                                             class="img-fluid img-thumbnail" 
+                                             style="max-height:120px; width:auto; border-color: #dee2e6;">
+                                    </div>
+                                    <div class="custom-file">
+                                        <input type="file" 
+                                               name="logo" 
+                                               class="custom-file-input <?php $__errorArgs = ['logo'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" 
+                                               id="logoInput"
+                                               accept="image/*">
+                                        <label class="custom-file-label" for="logoInput" style="background: #e9ecef; border-color: #ced4da;">Seleccionar logo</label>
+                                        <?php $__errorArgs = ['logo'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                            <span class="invalid-feedback"><?php echo e($message); ?></span>
+                                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                                    </div>
+                                    <small class="text-muted d-block mt-2">
+                                        <i class="fas fa-info-circle" style="color: #0d6efd;"></i> Aparece en facturas y PDFs
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Columna Datos Principales -->
+                        <div class="col-md-9">
+                            <div class="card" style="border-left: 3px solid #0d6efd;">
+                                <div class="card-header" style="background: #f1f3f5; border-bottom: 1px solid #dee2e6;">
+                                    <h5 class="card-title mb-0" style="color: #1a2332;">
+                                        <i class="fas fa-edit me-1" style="color: #0d6efd;"></i>Datos Generales
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="nombre" style="color: #1a2332; font-weight: 500;">
+                                                    <i class="fas fa-store text-danger me-1"></i>Nombre *
+                                                </label>
+                                                <input type="text" 
+                                                       name="nombre" 
+                                                       id="nombre"
+                                                       class="form-control <?php $__errorArgs = ['nombre'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" 
+                                                       value="<?php echo e(old('nombre', $empresa->nombre)); ?>" 
+                                                       placeholder="Nombre legal de la empresa"
+                                                       style="border-color: #ced4da;"
+                                                       required>
+                                                <?php $__errorArgs = ['nombre'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                                    <span class="invalid-feedback"><?php echo e($message); ?></span>
+                                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="ruc" style="color: #1a2332; font-weight: 500;">
+                                                    <i class="fas fa-id-card text-danger me-1"></i>RUC / NIT *
+                                                </label>
+                                                <input type="text" 
+                                                       name="ruc" 
+                                                       id="ruc"
+                                                       class="form-control <?php $__errorArgs = ['ruc'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" 
+                                                       value="<?php echo e(old('ruc', $empresa->ruc)); ?>" 
+                                                       placeholder="20-12345678-9"
+                                                       style="border-color: #ced4da;"
+                                                       required>
+                                                <?php $__errorArgs = ['ruc'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                                    <span class="invalid-feedback"><?php echo e($message); ?></span>
+                                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="direccion" style="color: #1a2332; font-weight: 500;">
+                                                    <i class="fas fa-map-marker-alt" style="color: #17a2b8;"></i> Dirección
+                                                </label>
+                                                <input type="text" 
+                                                       name="direccion" 
+                                                       id="direccion"
+                                                       class="form-control" 
+                                                       value="<?php echo e(old('direccion', $empresa->direccion)); ?>"
+                                                       placeholder="Calle, número, ciudad"
+                                                       style="border-color: #ced4da;">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="telefono" style="color: #1a2332; font-weight: 500;">
+                                                    <i class="fas fa-phone" style="color: #28a745;"></i> Teléfono
+                                                </label>
+                                                <input type="text" 
+                                                       name="telefono" 
+                                                       id="telefono"
+                                                       class="form-control" 
+                                                       value="<?php echo e(old('telefono', $empresa->telefono)); ?>"
+                                                       placeholder="+1 234 567 890"
+                                                       style="border-color: #ced4da;">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="email" style="color: #1a2332; font-weight: 500;">
+                                                    <i class="fas fa-envelope" style="color: #ffc107;"></i> Email
+                                                </label>
+                                                <input type="email" 
+                                                       name="email" 
+                                                       id="email"
+                                                       class="form-control" 
+                                                       value="<?php echo e(old('email', $empresa->email)); ?>"
+                                                       placeholder="contacto@empresa.com"
+                                                       style="border-color: #ced4da;">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="pagina_web" style="color: #1a2332; font-weight: 500;">
+                                                    <i class="fas fa-globe" style="color: #007bff;"></i> Sitio web
+                                                </label>
+                                                <input type="url" 
+                                                       name="pagina_web" 
+                                                       id="pagina_web"
+                                                       class="form-control" 
+                                                       value="<?php echo e(old('pagina_web', $empresa->pagina_web)); ?>"
+                                                       placeholder="https://www.empresa.com"
+                                                       style="border-color: #ced4da;">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="igv" style="color: #1a2332; font-weight: 500;">
+                                                    <i class="fas fa-percent text-danger me-1"></i>IGV / IVA (%) *
+                                                </label>
+                                                <input type="number" 
+                                                       step="0.01" 
+                                                       name="igv" 
+                                                       id="igv"
+                                                       class="form-control <?php $__errorArgs = ['igv'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" 
+                                                       value="<?php echo e(old('igv', $empresa->igv ?? 18)); ?>"
+                                                       style="border-color: #ced4da;"
+                                                       required>
+                                                <?php $__errorArgs = ['igv'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                                    <span class="invalid-feedback"><?php echo e($message); ?></span>
+                                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="moneda" style="color: #1a2332; font-weight: 500;">
+                                                    <i class="fas fa-dollar-sign" style="color: #28a745;"></i> Moneda *
+                                                </label>
+                                                <input type="text" 
+                                                       name="moneda" 
+                                                       id="moneda"
+                                                       class="form-control <?php $__errorArgs = ['moneda'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" 
+                                                       value="<?php echo e(old('moneda', $empresa->moneda ?? 'PEN')); ?>"
+                                                       placeholder="PEN, USD, EUR"
+                                                       style="border-color: #ced4da;"
+                                                       required>
+                                                <?php $__errorArgs = ['moneda'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                                    <span class="invalid-feedback"><?php echo e($message); ?></span>
+                                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
+                    <!-- Redes Sociales -->
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="card" style="border-left: 3px solid #0d6efd;">
+                                <div class="card-header" style="background: #f1f3f5; border-bottom: 1px solid #dee2e6;">
+                                    <h5 class="card-title mb-0" style="color: #1a2332;">
+                                        <i class="fas fa-share-alt me-1" style="color: #0d6efd;"></i>Redes Sociales
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="facebook" style="color: #1a2332; font-weight: 500;">
+                                                    <i class="fab fa-facebook" style="color: #1877f2;"></i> Facebook
+                                                </label>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text" style="background: #e9ecef; border-color: #ced4da;">
+                                                            <i class="fab fa-facebook-f" style="color: #1877f2;"></i>
+                                                        </span>
+                                                    </div>
+                                                    <input type="url" 
+                                                           name="redes_sociales[facebook]" 
+                                                           id="facebook"
+                                                           class="form-control" 
+                                                           value="<?php echo e(old('redes_sociales.facebook', $empresa->redes_sociales['facebook'] ?? '')); ?>"
+                                                           placeholder="https://facebook.com/tu-pagina"
+                                                           style="border-color: #ced4da;">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="instagram" style="color: #1a2332; font-weight: 500;">
+                                                    <i class="fab fa-instagram" style="color: #e4405f;"></i> Instagram
+                                                </label>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text" style="background: #e9ecef; border-color: #ced4da;">
+                                                            <i class="fab fa-instagram" style="color: #e4405f;"></i>
+                                                        </span>
+                                                    </div>
+                                                    <input type="url" 
+                                                           name="redes_sociales[instagram]" 
+                                                           id="instagram"
+                                                           class="form-control" 
+                                                           value="<?php echo e(old('redes_sociales.instagram', $empresa->redes_sociales['instagram'] ?? '')); ?>"
+                                                           placeholder="https://instagram.com/tu-perfil"
+                                                           style="border-color: #ced4da;">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="tiktok" style="color: #1a2332; font-weight: 500;">
+                                                    <i class="fab fa-tiktok" style="color: #000000;"></i> TikTok
+                                                </label>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text" style="background: #e9ecef; border-color: #ced4da;">
+                                                            <i class="fab fa-tiktok" style="color: #000000;"></i>
+                                                        </span>
+                                                    </div>
+                                                    <input type="url" 
+                                                           name="redes_sociales[tiktok]" 
+                                                           id="tiktok"
+                                                           class="form-control" 
+                                                           value="<?php echo e(old('redes_sociales.tiktok', $empresa->redes_sociales['tiktok'] ?? '')); ?>"
+                                                           placeholder="https://tiktok.com/@tu-usuario"
+                                                           style="border-color: #ced4da;">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Documentos PDF -->
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="card" style="border-left: 3px solid #0d6efd;">
+                                <div class="card-header" style="background: #f1f3f5; border-bottom: 1px solid #dee2e6;">
+                                    <h5 class="card-title mb-0" style="color: #1a2332;">
+                                        <i class="fas fa-file-pdf me-1" style="color: #dc3545;"></i>Configuración de Documentos PDF
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="firma" style="color: #1a2332; font-weight: 500;">
+                                                    <i class="fas fa-pen" style="color: #17a2b8;"></i> Firma digital
+                                                </label>
+                                                <?php if($empresa->firma): ?>
+                                                    <div class="mb-2 p-2 border rounded text-center" style="border-color: #ced4da !important; background: white;">
+                                                        <img src="<?php echo e(asset('storage/'.$empresa->firma)); ?>" 
+                                                             alt="Firma actual" 
+                                                             class="img-fluid" 
+                                                             style="max-height:60px;">
+                                                    </div>
+                                                <?php endif; ?>
+                                                <div class="custom-file">
+                                                    <input type="file" 
+                                                           name="firma" 
+                                                           class="custom-file-input" 
+                                                           id="firmaInput"
+                                                           accept="image/*">
+                                                    <label class="custom-file-label" for="firmaInput" style="background: #e9ecef; border-color: #ced4da;">
+                                                        <?php echo e($empresa->firma ? 'Cambiar firma' : 'Subir firma'); ?>
+
+                                                    </label>
+                                                </div>
+                                                <small class="text-muted d-block mt-1">
+                                                    <i class="fas fa-info-circle" style="color: #0d6efd;"></i> Formatos: PNG, JPG (recomendado fondo transparente)
+                                                </small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <div class="form-group">
+                                                <label for="pie_pagina_pdf" style="color: #1a2332; font-weight: 500;">
+                                                    <i class="fas fa-paragraph" style="color: #6c757d;"></i> Pie de página en PDFs
+                                                </label>
+                                                <textarea name="pie_pagina_pdf" 
+                                                          id="pie_pagina_pdf"
+                                                          class="form-control" 
+                                                          rows="3"
+                                                          placeholder="Ej: 'Gracias por su preferencia' | Tel: +1 234 567 890 | www.empresa.com"
+                                                          style="border-color: #ced4da; resize: vertical;"><?php echo e(old('pie_pagina_pdf', $empresa->pie_pagina_pdf)); ?></textarea>
+                                                <small class="text-muted d-block mt-1">
+                                                    <i class="fas fa-info-circle" style="color: #0d6efd;"></i> Este texto aparecerá al pie de todas las facturas y documentos PDF generados
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="float-right">
+                                <a href="<?php echo e(route('dashboard')); ?>" class="btn" style="background: #6c757d; color: white; margin-right: 10px;">
+                                    <i class="fas fa-times me-1"></i>Cancelar
+                                </a>
+                                <button type="submit" class="btn" style="background: #0d6efd; color: white;">
+                                    <i class="fas fa-save me-1"></i>Guardar cambios
+                                </button>
+                            </div>
+                            <div class="text-muted small mt-2">
+                                <i class="fas fa-asterisk text-danger me-1"></i> Campos obligatorios
+                            </div>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+            <!-- /.card-body -->
+            
+            <div class="card-footer" style="background: #f1f3f5; border-top: 1px solid #dee2e6;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span style="color: #6c757d;">
+                        <i class="fas fa-info-circle me-1" style="color: #0d6efd;"></i>
+                        Última actualización: <?php echo e($empresa->updated_at ? $empresa->updated_at->format('d/m/Y h:i:s a') : 'Nunca'); ?>
+
+                    </span>
+                    <span style="color: #6c757d;">
+                        <i class="fas fa-user me-1" style="color: #0d6efd;"></i>
+                        <?php echo e(auth()->user()->name ?? 'Usuario'); ?>
+
+                    </span>
                 </div>
             </div>
-
-            <hr>
-            <h6>Redes sociales</h6>
-            <div class="row">
-                <div class="col-md-4 mb-3"><label class="form-label">Facebook</label><input type="url" name="redes_sociales[facebook]" class="form-control" value="<?php echo e(old('redes_sociales.facebook', $empresa->redes_sociales['facebook'] ?? '')); ?>"></div>
-                <div class="col-md-4 mb-3"><label class="form-label">Instagram</label><input type="url" name="redes_sociales[instagram]" class="form-control" value="<?php echo e(old('redes_sociales.instagram', $empresa->redes_sociales['instagram'] ?? '')); ?>"></div>
-                <div class="col-md-4 mb-3"><label class="form-label">TikTok</label><input type="url" name="redes_sociales[tiktok]" class="form-control" value="<?php echo e(old('redes_sociales.tiktok', $empresa->redes_sociales['tiktok'] ?? '')); ?>"></div>
-            </div>
-
-            <hr>
-            <h6>Documentos PDF</h6>
-            <div class="row">
-                <div class="col-md-4 mb-3">
-                    <label class="form-label">Firma digital (imagen)</label>
-                    <?php if($empresa->firma): ?><div class="mb-1"><img src="<?php echo e(asset('storage/'.$empresa->firma)); ?>" style="max-height:60px"></div><?php endif; ?>
-                    <input type="file" name="firma" class="form-control" accept="image/*">
-                </div>
-                <div class="col-md-8 mb-3">
-                    <label class="form-label">Pie de página en PDFs</label>
-                    <textarea name="pie_pagina_pdf" class="form-control" rows="2"><?php echo e(old('pie_pagina_pdf', $empresa->pie_pagina_pdf)); ?></textarea>
-                </div>
-            </div>
-
-            <button type="submit" class="btn btn-primary"><i class="fas fa-save me-1"></i>Guardar cambios</button>
-        </form>
+        </div>
+        <!-- /.card -->
     </div>
 </div>
 <?php $__env->stopSection(); ?>
 
+<?php $__env->startPush('scripts'); ?>
+<script>
+    // Auto-label para inputs de archivo
+    document.addEventListener('DOMContentLoaded', function() {
+        // Logo
+        document.getElementById('logoInput')?.addEventListener('change', function(e) {
+            const fileName = e.target.files[0]?.name || 'Seleccionar logo';
+            const label = e.target.nextElementSibling;
+            if (label) label.textContent = fileName;
+        });
+
+        // Firma
+        document.getElementById('firmaInput')?.addEventListener('change', function(e) {
+            const fileName = e.target.files[0]?.name || 'Subir firma';
+            const label = e.target.nextElementSibling;
+            if (label) label.textContent = fileName;
+        });
+    });
+</script>
+<?php $__env->stopPush(); ?>
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\constructor-erp\resources\views/empresa/edit.blade.php ENDPATH**/ ?>

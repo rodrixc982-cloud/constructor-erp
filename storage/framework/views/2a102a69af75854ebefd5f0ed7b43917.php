@@ -2,41 +2,457 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <title><?php echo e(strtoupper(str_replace('_', ' ', $documento->tipo))); ?> - <?php echo e($documento->numero_completo); ?></title>
     <style>
-        body { font-family: sans-serif; font-size: 12px; color: #222; }
-        header { display: flex; justify-content: space-between; border-bottom: 2px solid #2a5298; padding-bottom: 10px; margin-bottom: 16px; }
-        h1 { font-size: 16px; color: #2a5298; margin: 0; }
-        .caja { border: 1px solid #2a5298; padding: 8px; text-align: center; }
-        table { width: 100%; border-collapse: collapse; margin-top: 16px; }
-        td, th { padding: 6px; border: 1px solid #ddd; }
-        .text-end { text-align: right; }
+        /* ========== ESTILOS GENERALES ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            font-size: 11px;
+            color: #1a1a2e;
+            background: #ffffff;
+            padding: 30px;
+            line-height: 1.5;
+        }
+
+        /* ========== CONTENEDOR PRINCIPAL ========== */
+        .documento-wrapper {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            padding: 35px 40px 30px 40px;
+            border: 1px solid #e8ecf1;
+        }
+
+        /* ========== HEADER ========== */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 3px solid #2a5298;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+
+        .empresa-info {
+            flex: 1;
+        }
+
+        .empresa-info .logo {
+            font-size: 22px;
+            font-weight: 700;
+            color: #2a5298;
+            letter-spacing: -0.5px;
+            margin-bottom: 4px;
+        }
+
+        .empresa-info .logo span {
+            color: #e74c3c;
+        }
+
+        .empresa-info .detalle {
+            font-size: 10px;
+            color: #5a6c7e;
+            margin-top: 2px;
+        }
+
+        .empresa-info .detalle strong {
+            color: #2a5298;
+        }
+
+        /* ========== TIPO DE DOCUMENTO ========== */
+        .tipo-documento {
+            background: linear-gradient(135deg, #2a5298 0%, #1a3a6a 100%);
+            color: #ffffff;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-align: center;
+            min-width: 180px;
+            box-shadow: 0 4px 12px rgba(42, 82, 152, 0.25);
+        }
+
+        .tipo-documento .titulo {
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .tipo-documento .numero {
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            margin-top: 2px;
+        }
+
+        .tipo-documento .fecha {
+            font-size: 9px;
+            opacity: 0.85;
+            margin-top: 4px;
+        }
+
+        /* ========== CLIENTE ========== */
+        .cliente-section {
+            background: #f8f9fc;
+            border-radius: 8px;
+            padding: 15px 18px;
+            margin-bottom: 22px;
+            border-left: 4px solid #2a5298;
+        }
+
+        .cliente-section .label {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: #7a8a9e;
+            font-weight: 600;
+        }
+
+        .cliente-section .nombre {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+
+        .cliente-section .doc-info {
+            font-size: 10px;
+            color: #5a6c7e;
+            margin-top: 2px;
+        }
+
+        /* ========== TABLA DE DETALLES ========== */
+        .detalles-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 18px 0 22px 0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+        }
+
+        .detalles-table thead th {
+            background: #2a5298;
+            color: #ffffff;
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            padding: 10px 14px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .detalles-table thead th.text-end {
+            text-align: right;
+        }
+
+        .detalles-table tbody td {
+            padding: 10px 14px;
+            border-bottom: 1px solid #edf1f7;
+            font-size: 11px;
+            background: #ffffff;
+        }
+
+        .detalles-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .detalles-table .text-end {
+            text-align: right;
+        }
+
+        .detalles-table .text-center {
+            text-align: center;
+        }
+
+        .detalles-table .total-row td {
+            background: #f8f9fc;
+            font-weight: 700;
+            border-top: 2px solid #2a5298;
+            padding: 12px 14px;
+        }
+
+        .detalles-table .total-row .label {
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+
+        .detalles-table .total-row .valor {
+            font-size: 16px;
+            color: #2a5298;
+        }
+
+        /* ========== TOTALES ========== */
+        .totales {
+            margin-top: 10px;
+        }
+
+        .totales .fila {
+            display: flex;
+            justify-content: flex-end;
+            padding: 4px 0;
+            font-size: 11px;
+        }
+
+        .totales .fila .label {
+            color: #5a6c7e;
+            width: 140px;
+            text-align: right;
+            padding-right: 16px;
+        }
+
+        .totales .fila .valor {
+            width: 120px;
+            text-align: right;
+            font-weight: 500;
+        }
+
+        .totales .fila.total-final {
+            border-top: 2px solid #2a5298;
+            padding-top: 10px;
+            margin-top: 6px;
+        }
+
+        .totales .fila.total-final .label {
+            font-weight: 700;
+            color: #1a1a2e;
+            font-size: 13px;
+        }
+
+        .totales .fila.total-final .valor {
+            font-size: 18px;
+            font-weight: 800;
+            color: #2a5298;
+        }
+
+        /* ========== OBSERVACIONES ========== */
+        .observaciones {
+            margin-top: 20px;
+            padding: 14px 18px;
+            background: #f8f9fc;
+            border-radius: 8px;
+            border-left: 3px solid #e74c3c;
+        }
+
+        .observaciones .label {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: #7a8a9e;
+            font-weight: 600;
+        }
+
+        .observaciones .texto {
+            font-size: 11px;
+            color: #2d3a4a;
+            margin-top: 3px;
+        }
+
+        /* ========== FOOTER ========== */
+        .footer {
+            margin-top: 30px;
+            padding-top: 18px;
+            border-top: 1px solid #e8ecf1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 9px;
+            color: #8a9aa8;
+        }
+
+        .footer .gracias {
+            font-size: 11px;
+            font-weight: 500;
+            color: #2a5298;
+        }
+
+        .footer .info-legal {
+            text-align: right;
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 600px) {
+            .documento-wrapper {
+                padding: 20px;
+            }
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .tipo-documento {
+                width: 100%;
+            }
+            .totales .fila {
+                justify-content: space-between;
+            }
+            .totales .fila .label {
+                width: auto;
+                text-align: left;
+                padding-right: 10px;
+            }
+            .totales .fila .valor {
+                width: auto;
+            }
+        }
     </style>
 </head>
 <body>
-    <header>
-        <div>
-            <h1><?php echo e($empresa->nombre ?? config('app.name')); ?></h1>
-            <small>RUC: <?php echo e($empresa->ruc ?? '—'); ?><br><?php echo e($empresa->direccion); ?></small>
-        </div>
-        <div class="caja">
-            <strong><?php echo e(strtoupper(str_replace('_', ' ', $documento->tipo))); ?></strong><br>
-            <?php echo e($documento->numero_completo); ?><br>
-            <small><?php echo e($documento->fecha->format('d/m/Y')); ?></small>
-        </div>
-    </header>
 
-    <p><strong>Cliente:</strong> <?php echo e($documento->cliente?->nombre ?? '—'); ?><br>
-       <strong>RUC/DNI:</strong> <?php echo e($documento->cliente?->ruc ?? $documento->cliente?->dni ?? '—'); ?></p>
+<div class="documento-wrapper">
 
-    <table>
-        <tr><td>Subtotal</td><td class="text-end"><?php echo e(number_format($documento->subtotal, 2)); ?></td></tr>
-        <tr><td>IGV</td><td class="text-end"><?php echo e(number_format($documento->igv, 2)); ?></td></tr>
-        <tr><td><strong>TOTAL</strong></td><td class="text-end"><strong><?php echo e(number_format($documento->total, 2)); ?></strong></td></tr>
+    <!-- ========== HEADER ========== -->
+    <div class="header">
+        <div class="empresa-info">
+            <div class="logo">
+                <?php echo e($empresa->nombre ?? config('app.name')); ?>
+
+                <span>·</span>
+            </div>
+            <div class="detalle">
+                <strong>RUC:</strong> <?php echo e($empresa->ruc ?? '—'); ?> &nbsp;|&nbsp; 
+                <strong>Tel:</strong> <?php echo e($empresa->telefono ?? '—'); ?> &nbsp;|&nbsp;
+                <strong>Email:</strong> <?php echo e($empresa->email ?? '—'); ?>
+
+            </div>
+            <div class="detalle">
+                <?php echo e($empresa->direccion ?? ''); ?>
+
+                <?php if($empresa->distrito ?? false): ?>
+                    - <?php echo e($empresa->distrito); ?>, <?php echo e($empresa->departamento ?? ''); ?>
+
+                <?php endif; ?>
+            </div>
+        </div>
+
+        <div class="tipo-documento">
+            <div class="titulo">
+                <?php echo e(strtoupper(str_replace('_', ' ', $documento->tipo))); ?>
+
+            </div>
+            <div class="numero">
+                <?php echo e($documento->numero_completo); ?>
+
+            </div>
+            <div class="fecha">
+                <?php echo e($documento->fecha ? $documento->fecha->format('d/m/Y') : '—'); ?>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== CLIENTE ========== -->
+    <div class="cliente-section">
+        <div class="label">Cliente</div>
+        <div class="nombre">
+            <?php echo e($documento->cliente?->nombre ?? '—'); ?>
+
+        </div>
+        <div class="doc-info">
+            <?php if($documento->cliente): ?>
+                <strong>RUC:</strong> <?php echo e($documento->cliente->ruc ?? '—'); ?>
+
+                <?php if($documento->cliente->dni): ?>
+                    &nbsp;|&nbsp; <strong>DNI:</strong> <?php echo e($documento->cliente->dni); ?>
+
+                <?php endif; ?>
+                <?php if($documento->cliente->telefono): ?>
+                    &nbsp;|&nbsp; <strong>Tel:</strong> <?php echo e($documento->cliente->telefono); ?>
+
+                <?php endif; ?>
+                <?php if($documento->cliente->email): ?>
+                    &nbsp;|&nbsp; <strong>Email:</strong> <?php echo e($documento->cliente->email); ?>
+
+                <?php endif; ?>
+            <?php else: ?>
+                <span style="color:#8a9aa8;">Cliente no registrado</span>
+            <?php endif; ?>
+        </div>
+    </div>
+
+    <!-- ========== TABLA DE DETALLES ========== -->
+    <table class="detalles-table">
+        <thead>
+            <tr>
+                <th style="width:60%;">Descripción</th>
+                <th class="text-end" style="width:20%;">Precio</th>
+                <th class="text-end" style="width:20%;">Importe</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Aquí puedes iterar los items del documento -->
+            <?php if($documento->items && $documento->items->count() > 0): ?>
+                <?php $__currentLoopData = $documento->items; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <tr>
+                    <td><?php echo e($item->descripcion ?? 'Producto/Servicio'); ?></td>
+                    <td class="text-end">
+                        S/ <?php echo e(number_format($item->precio_unitario ?? 0, 2)); ?>
+
+                    </td>
+                    <td class="text-end">
+                        S/ <?php echo e(number_format($item->subtotal ?? 0, 2)); ?>
+
+                    </td>
+                </tr>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            <?php else: ?>
+                <tr>
+                    <td colspan="3" style="text-align:center; color:#8a9aa8; padding:20px;">
+                        Sin items registrados
+                    </td>
+                </tr>
+            <?php endif; ?>
+
+            <!-- ========== FILA DE TOTALES ========== -->
+            <tr class="total-row">
+                <td colspan="2" class="text-end label">SUBTOTAL</td>
+                <td class="text-end">S/ <?php echo e(number_format($documento->subtotal, 2)); ?></td>
+            </tr>
+            <tr class="total-row" style="border-top: none;">
+                <td colspan="2" class="text-end label">IGV (<?php echo e($documento->igv_porcentaje ?? 18); ?>%)</td>
+                <td class="text-end">S/ <?php echo e(number_format($documento->igv, 2)); ?></td>
+            </tr>
+            <tr class="total-row" style="border-top: none; background: #f0f4ff;">
+                <td colspan="2" class="text-end label" style="font-size: 13px; color: #2a5298;">
+                    <strong>TOTAL</strong>
+                </td>
+                <td class="text-end valor" style="font-size: 18px; color: #2a5298;">
+                    S/ <?php echo e(number_format($documento->total, 2)); ?>
+
+                </td>
+            </tr>
+        </tbody>
     </table>
 
+    <!-- ========== OBSERVACIONES ========== -->
     <?php if($documento->observaciones): ?>
-    <p style="margin-top:16px"><strong>Observaciones:</strong> <?php echo e($documento->observaciones); ?></p>
+    <div class="observaciones">
+        <div class="label">Observaciones</div>
+        <div class="texto"><?php echo e($documento->observaciones); ?></div>
+    </div>
     <?php endif; ?>
+
+    <!-- ========== FOOTER ========== -->
+    <div class="footer">
+        <div class="gracias">
+            ¡Gracias por su preferencia!
+        </div>
+        <div class="info-legal">
+            <div>Documento generado electrónicamente</div>
+            <div style="font-size:8px; color:#b0bcc8; margin-top:2px;">
+                <?php echo e($empresa->nombre ?? config('app.name')); ?> &bull; <?php echo e(now()->format('d/m/Y H:i')); ?>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
 </body>
-</html>
-<?php /**PATH C:\laragon\www\constructor-erp\resources\views/facturacion/pdf.blade.php ENDPATH**/ ?>
+</html><?php /**PATH C:\laragon\www\constructor-erp\resources\views/facturacion/pdf.blade.php ENDPATH**/ ?>

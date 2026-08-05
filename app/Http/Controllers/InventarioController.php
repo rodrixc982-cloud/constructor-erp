@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\DB;
 
 class InventarioController extends Controller implements HasMiddleware
 {
@@ -30,20 +31,57 @@ class InventarioController extends Controller implements HasMiddleware
         ];
     }
 
-    public function index(): View
+    public function index(Request $request): View
     {
         $almacenes = Almacen::where('estado', true)->orderBy('nombre')->get();
         $materiales = Material::where('estado', true)->orderBy('nombre')->get();
+        
+        // --- CORRECCIÓN 1: STOCK BAJO ---
+        // Se llama al servicio. Asegúrate de que en InventarioService.php exista este método.
         $alertas = $this->service->materialesStockBajo();
 
-        return view('inventario.index', compact('almacenes', 'materiales', 'alertas'));
+        // --- CORRECCIÓN 2: LÓGICA DE TARJETAS ---
+        $mes = $request->input('mes', now()->month);
+        $anio = $request->input('anio', now()->year);
+
+        // 1. Total Materiales (Stock actual).
+        // SI EN TU BD LAS SALIDAS SE GUARDAN COMO NEGATIVOS (-23), ESTO YA FUNCIONA PERFECTO.
+        // SI SE GUARDAN COMO POSITIVOS, DEBES CALCULAR (ENTRADAS - SALIDAS) O USAR DB::raw('SUM(CASE...)')
+        $totalMateriales = MovimientoInventario::sum('cantidad');
+
+        // 2. Entradas del mes (SE CORRIGE EL NOMBRE A MINÚSCULA 'entrada' - CAMBIAR SI TU BD TIENE OTRO VALOR)
+        $entradasMes = MovimientoInventario::where('tipo', 'entrada') 
+            ->whereYear('created_at', $anio)
+            ->whereMonth('created_at', $mes)
+            ->sum('cantidad');
+
+        // 3. Salidas del mes (SE CORRIGE EL NOMBRE A MINÚSCULA 'salida' - CAMBIAR SI TU BD TIENE OTRO VALOR)
+        // Se usa ABS() para asegurar que el número siempre sea positivo en la tarjeta, sin importar cómo se guardó.
+        $salidasMes = MovimientoInventario::where('tipo', 'salida')
+            ->whereYear('created_at', $anio)
+            ->whereMonth('created_at', $mes)
+            ->sum(DB::raw('ABS(cantidad)'));
+
+        return view('inventario.index', compact(
+            'almacenes', 
+            'materiales', 
+            'alertas', 
+            'totalMateriales', 
+            'entradasMes', 
+            'salidasMes'
+        ));
     }
 
     public function datos(Request $request): JsonResponse
     {
+        $mes = $request->get('mes', now()->month);
+        $anio = $request->get('anio', now()->year);
+
         $movimientos = MovimientoInventario::with(['material', 'almacen', 'almacenDestino', 'usuario'])
             ->when($request->get('material_id'), fn ($q) => $q->where('material_id', $request->get('material_id')))
             ->when($request->get('almacen_id'), fn ($q) => $q->where('almacen_id', $request->get('almacen_id')))
+            ->whereYear('created_at', $anio)
+            ->whereMonth('created_at', $mes)
             ->latest()
             ->limit(500)
             ->get();
